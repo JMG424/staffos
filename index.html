@@ -3,923 +3,1167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jason M.G. — Mission Control</title>
+  <title>StaffOS — AI Operations Teams for Entrepreneurs</title>
+  <meta name="description" content="A done-for-you team of AI agents that coordinate around your business. Installed in 30 days." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #0a0e1a;
-      --bg2:       #0d1224;
-      --bg3:       #111830;
-      --cyan:      #00d4ff;
-      --cyan-dim:  rgba(0, 212, 255, 0.15);
-      --cyan-glow: rgba(0, 212, 255, 0.35);
-      --purple:    #7b61ff;
-      --purple-dim:rgba(123, 97, 255, 0.15);
-      --green:     #00ff88;
-      --text:      #e2e8f4;
-      --muted:     #8899b4;
-      --glass-bg:  rgba(255,255,255,0.04);
-      --glass-border: rgba(255,255,255,0.08);
-      --radius:    16px;
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    html { scroll-behavior: smooth; }
+    :root {
+      --navy: #0a0e1a;
+      --navy-light: #0f1628;
+      --navy-mid: #131d35;
+      --cyan: #00d4ff;
+      --cyan-dim: rgba(0, 212, 255, 0.15);
+      --cyan-glow: rgba(0, 212, 255, 0.3);
+      --purple: #7b61ff;
+      --purple-dim: rgba(123, 97, 255, 0.15);
+      --purple-glow: rgba(123, 97, 255, 0.3);
+      --white: #ffffff;
+      --white-60: rgba(255,255,255,0.6);
+      --white-30: rgba(255,255,255,0.3);
+      --white-10: rgba(255,255,255,0.07);
+      --green: #00ff88;
+      --green-dim: rgba(0, 255, 136, 0.2);
+      --border: rgba(255,255,255,0.08);
+      --font: 'Space Grotesk', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: 'Space Grotesk', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      font-family: var(--font);
+      background-color: var(--navy);
+      color: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    /* ── Starfield ── */
-    #stars {
+    /* ── NAV ── */
+    nav {
       position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .star {
-      position: absolute;
-      width: 2px; height: 2px;
-      border-radius: 50%;
-      background: #fff;
-      opacity: 0;
-      animation: twinkle var(--d, 4s) var(--delay, 0s) infinite ease-in-out;
-    }
-    @keyframes twinkle {
-      0%,100% { opacity: 0; }
-      50%      { opacity: var(--max-op, 0.6); }
-    }
-
-    /* ── Ambient glows ── */
-    .ambient {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(120px);
-      pointer-events: none;
-      z-index: 0;
-    }
-    .ambient-1 {
-      width: 600px; height: 400px;
-      top: -150px; left: -100px;
-      background: rgba(0,212,255,0.07);
-    }
-    .ambient-2 {
-      width: 500px; height: 500px;
-      bottom: 200px; right: -150px;
-      background: rgba(123,97,255,0.07);
-    }
-    .ambient-3 {
-      width: 400px; height: 300px;
-      top: 50%; left: 40%;
-      background: rgba(0,212,255,0.04);
-    }
-
-    /* ── Layout ── */
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* ── Header ── */
-    header {
-      padding: 80px 0 60px;
-      text-align: center;
-      position: relative;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 32px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .top-bar::before, .top-bar::after {
-      content: '';
-      display: block;
-      height: 1px;
-      width: 60px;
-      background: linear-gradient(90deg, transparent, var(--muted));
-    }
-    .top-bar::after {
-      background: linear-gradient(90deg, var(--muted), transparent);
-    }
-
-    .hero-name {
-      font-size: clamp(2.8rem, 7vw, 5rem);
-      font-weight: 700;
-      letter-spacing: -1px;
-      line-height: 1;
-      background: linear-gradient(135deg, #fff 30%, var(--cyan) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 16px;
-    }
-
-    .hero-subtitle {
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      font-weight: 500;
-      color: var(--cyan);
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-
-    .hero-tagline {
-      font-size: 0.9rem;
-      color: var(--muted);
-      font-weight: 400;
-      margin-bottom: 32px;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0,255,136,0.08);
-      border: 1px solid rgba(0,255,136,0.2);
-      border-radius: 100px;
-      padding: 8px 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--green);
-    }
-    .pulse-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 6px var(--green); }
-      50%      { opacity: 0.5; transform: scale(0.85); box-shadow: 0 0 2px var(--green); }
-    }
-
-    /* ── Section ── */
-    section { padding: 80px 0; }
-
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-bottom: 14px;
-    }
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, var(--cyan-dim), transparent);
-    }
-
-    .section-title {
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 700;
-      margin-bottom: 48px;
-      letter-spacing: -0.5px;
-    }
-
-    /* ── Glass card ── */
-    .glass {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-    }
-    .glass:hover {
-      border-color: var(--cyan-glow);
-      box-shadow: 0 0 30px rgba(0,212,255,0.12), 0 8px 40px rgba(0,0,0,0.4);
-      transform: translateY(-3px);
-    }
-
-    /* ── Org Chart ── */
-    .org-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-    }
-
-    /* Jason card (top) */
-    .jason-card {
-      width: 240px;
-      padding: 24px 28px;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      border-color: rgba(0,212,255,0.3);
-      background: rgba(0,212,255,0.06);
-    }
-    .jason-card .card-avatar {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--cyan), var(--purple));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-      margin: 0 auto 12px;
-      box-shadow: 0 0 20px rgba(0,212,255,0.3);
-    }
-    .jason-card .card-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .jason-card .card-title {
-      font-size: 0.75rem;
-      color: var(--cyan);
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    /* SVG connector */
-    .org-connector {
-      width: 100%;
-      max-width: 900px;
-      height: 60px;
-      overflow: visible;
-    }
-
-    /* Agent cards row */
-    .agent-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      width: 100%;
-    }
-
-    @media (max-width: 800px) {
-      .agent-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .agent-grid { grid-template-columns: 1fr; }
-    }
-
-    .agent-card {
-      padding: 24px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .agent-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .agent-card:hover::before { opacity: 1; }
-
-    .agent-emoji {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      display: block;
-      filter: drop-shadow(0 0 8px rgba(0,212,255,0.4));
-    }
-    .agent-name {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .agent-title {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--cyan);
-      margin-bottom: 14px;
-    }
-    .agent-bullets {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .agent-bullets li {
-      font-size: 0.78rem;
-      color: var(--muted);
-      padding-left: 14px;
-      position: relative;
-      line-height: 1.4;
-    }
-    .agent-bullets li::before {
-      content: '›';
-      position: absolute;
+      top: 0;
       left: 0;
-      color: var(--cyan);
-      font-weight: 700;
-    }
-
-    /* Status pip */
-    .agent-status {
-      position: absolute;
-      top: 16px; right: 16px;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    .agent-status.delay-1 { animation-delay: 0.5s; }
-    .agent-status.delay-2 { animation-delay: 1s; }
-    .agent-status.delay-3 { animation-delay: 1.5s; }
-
-    /* ── How It Works ── */
-    #how { background: var(--bg2); margin: 0 -24px; padding: 80px 24px; }
-    #how .page { max-width: 1100px; margin: 0 auto; padding: 0; }
-
-    .flow-diagram {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    /* Row 1: Jason → Clawd13 */
-    .flow-row-1 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      margin-bottom: 0;
-    }
-
-    /* Row 2: Clawd13 → specialists */
-    .flow-row-2 {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 0;
-      position: relative;
-    }
-
-    .flow-node {
-      text-align: center;
-      padding: 20px 24px;
-      min-width: 160px;
-      border-radius: var(--radius);
-      position: relative;
-    }
-    .flow-node.primary {
-      background: rgba(0,212,255,0.08);
-      border: 1px solid rgba(0,212,255,0.25);
-    }
-    .flow-node.secondary {
-      background: rgba(123,97,255,0.07);
-      border: 1px solid rgba(123,97,255,0.2);
-      min-width: 130px;
-      padding: 16px 18px;
-    }
-    .flow-node .node-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
-    .flow-node .node-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .flow-node .node-desc {
-      font-size: 0.7rem;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    /* SVG flow lines */
-    .flow-svg {
-      width: 100%;
-      overflow: visible;
-      display: block;
-    }
-
-    /* ── Operations Board ── */
-    .ops-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-    @media (max-width: 600px) {
-      .ops-grid { grid-template-columns: 1fr; }
-    }
-
-    .ops-card {
-      padding: 28px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .ops-card-header {
+      right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-    .ops-card-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .ops-icon {
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem;
-    }
-    .ops-icon.cyan { background: var(--cyan-dim); }
-    .ops-icon.purple { background: var(--purple-dim); }
-
-    .ops-name {
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-    .ops-agent {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 2px;
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
     }
 
-    .ops-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.65rem;
+    .nav-logo {
+      font-size: 1.1rem;
       font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 100px;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      text-decoration: none;
     }
-    .ops-badge.running {
-      background: rgba(0,255,136,0.1);
-      border: 1px solid rgba(0,255,136,0.25);
-      color: var(--green);
-    }
-    .ops-badge.active {
-      background: rgba(0,212,255,0.1);
-      border: 1px solid rgba(0,212,255,0.25);
+
+    .nav-logo span {
       color: var(--cyan);
     }
-    .badge-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: currentColor;
-      animation: pulse 2s infinite;
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1.2rem;
+      background: var(--cyan);
+      color: var(--navy);
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
     }
 
-    .ops-progress-bar {
-      height: 3px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 100px;
+    .nav-cta:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 5rem;
+      position: relative;
       overflow: hidden;
     }
-    .ops-progress-fill {
-      height: 100%;
-      border-radius: 100px;
-      background: linear-gradient(90deg, var(--cyan), var(--purple));
-      animation: progress-shimmer 2s ease-in-out infinite;
-    }
-    @keyframes progress-shimmer {
-      0%   { opacity: 0.7; }
-      50%  { opacity: 1; }
-      100% { opacity: 0.7; }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 900px;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.07) 0%, transparent 70%);
+      pointer-events: none;
     }
 
-    .ops-desc {
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -150px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(123, 97, 255, 0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .system-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid rgba(0, 255, 136, 0.35);
+      border-radius: 999px;
+      background: var(--green-dim);
       font-size: 0.78rem;
-      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 2rem;
+    }
+
+    .system-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px var(--green); }
+      50% { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 3px var(--green); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
+      color: var(--white-60);
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.8rem;
+      background: var(--cyan);
+      color: var(--navy);
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 212, 255, 0.35);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.8rem;
+      background: transparent;
+      color: var(--white);
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      border: 1px solid var(--white-30);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--cyan);
+      background: var(--cyan-dim);
+      transform: translateY(-2px);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 6rem 1.5rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      color: var(--white-60);
+      font-size: 1.05rem;
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ── PROBLEM ── */
+    .problem {
+      background: var(--navy-light);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .problem-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .problem-card:hover {
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-3px);
+    }
+
+    .problem-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--purple), transparent);
+    }
+
+    .problem-card .icon {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .problem-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--white);
+    }
+
+    /* ── SOLUTION / AGENTS ── */
+    .solution {
+      text-align: center;
+    }
+
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .agents-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .agent-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    }
+
+    .agent-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--cyan);
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1);
+    }
+
+    .agent-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.04), transparent 60%);
+      pointer-events: none;
+    }
+
+    .agent-emoji {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .agent-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+
+    .agent-role {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+
+    .agent-desc {
+      font-size: 0.9rem;
+      color: var(--white-60);
+      line-height: 1.6;
+    }
+
+    .agent-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-dim);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .agent-footer {
+      color: var(--white-60);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .agent-footer strong {
+      color: var(--white);
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      background: var(--navy-light);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .step-num {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+      color: rgba(0, 212, 255, 0.12);
+      margin-bottom: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .step h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .step p {
+      font-size: 0.95rem;
+      color: var(--white-60);
+      line-height: 1.65;
+    }
+
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 0;
+      width: 3px;
+      height: calc(100% - 5px);
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+      border-radius: 2px;
+    }
+
+    /* ── WHAT CLIENTS GET ── */
+    .features-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .feature-item:hover {
+      border-color: rgba(0, 212, 255, 0.25);
+    }
+
+    .feature-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    .feature-text {
+      font-size: 0.93rem;
+      color: var(--white-60);
       line-height: 1.5;
     }
 
-    /* ── Footer ── */
-    footer {
-      border-top: 1px solid var(--glass-border);
-      padding: 32px 0;
+    .feature-text strong {
+      color: var(--white);
+      display: block;
+      margin-bottom: 0.15rem;
+      font-weight: 600;
+    }
+
+    /* ── PRICING ── */
+    .pricing {
+      background: var(--navy-light);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .pricing-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 16px;
+      padding: 2.25rem 2rem;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .pricing-card.featured {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px var(--cyan), 0 16px 50px rgba(0, 212, 255, 0.12);
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cyan);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .pricing-tier {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+
+    .pricing-price {
+      margin-bottom: 0.25rem;
+    }
+
+    .pricing-price .setup {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .pricing-price .period {
+      font-size: 0.85rem;
+      color: var(--white-60);
+      margin-left: 0.35rem;
+    }
+
+    .pricing-monthly {
+      font-size: 0.88rem;
+      color: var(--white-60);
+      margin-bottom: 1.75rem;
+    }
+
+    .pricing-monthly strong {
+      color: var(--white);
+    }
+
+    .pricing-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      color: var(--white-60);
+      line-height: 1.45;
+    }
+
+    .pricing-features li::before {
+      content: '→';
+      color: var(--cyan);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    .pricing-cta {
+      display: block;
       text-align: center;
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 1px;
-    }
-    footer span { color: var(--cyan); opacity: 0.7; }
-
-    /* ── Responsive helpers ── */
-    @media (max-width: 700px) {
-      header { padding: 50px 0 40px; }
-      section { padding: 60px 0; }
-      .jason-card { width: 200px; }
-      .org-connector { height: 40px; }
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
     }
 
-    /* ── Scan-line overlay for atmosphere ── */
-    body::after {
+    .pricing-cta-primary {
+      background: var(--cyan);
+      color: var(--navy);
+    }
+
+    .pricing-cta-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .pricing-cta-secondary {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--white-30);
+    }
+
+    .pricing-cta-secondary:hover {
+      border-color: var(--cyan);
+      background: var(--cyan-dim);
+    }
+
+    /* ── DEMO PROOF ── */
+    .demo-proof {
+      text-align: center;
+    }
+
+    .proof-box {
+      max-width: 680px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .proof-box::before {
       content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.03) 2px,
-        rgba(0,0,0,0.03) 4px
-      );
-      pointer-events: none;
-      z-index: 999;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+    }
+
+    .proof-quote {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 1.25rem;
+      line-height: 1.3;
+    }
+
+    .proof-body {
+      font-size: 0.98rem;
+      color: var(--white-60);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+
+    .proof-agents {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .proof-agent-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      background: var(--white-10);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--white-60);
+    }
+
+    .proof-client {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .proof-client-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 0.5rem;
+    }
+
+    .proof-client-body {
+      font-size: 0.88rem;
+      color: var(--white-60);
+      line-height: 1.6;
+    }
+
+    .proof-client-body strong {
+      color: var(--white);
+    }
+
+    /* ── CONTACT ── */
+    .contact {
+      background: var(--navy-light);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .contact-inner {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .contact .section-title {
+      margin-bottom: 0.75rem;
+    }
+
+    .contact .section-sub {
+      margin-bottom: 2.5rem;
+      max-width: 100%;
+    }
+
+    .contact-options {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--navy);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-size: 0.9rem;
+      color: var(--white-60);
+    }
+
+    .footer-brand strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: var(--white-60);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--cyan);
+    }
+
+    .footer-built {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .footer-built a {
+      color: var(--purple);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-built a:hover {
+      color: var(--cyan);
+    }
+
+    /* ── MISC ── */
+    .text-cyan { color: var(--cyan); }
+    .text-purple { color: var(--purple); }
+
+    @media (max-width: 768px) {
+      section { padding: 4.5rem 1.25rem; }
+      nav { padding: 1rem 1.25rem; }
+      .proof-box { padding: 2rem 1.5rem; }
+      .pricing-card { padding: 2rem 1.5rem; }
+      .footer-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+    }
+
+    @media (max-width: 480px) {
+      .agents-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- Starfield -->
-<div id="stars"></div>
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Staff<span>OS</span></a>
+    <a href="#contact" class="nav-cta">Talk to Jason →</a>
+  </nav>
 
-<!-- Ambient glows -->
-<div class="ambient ambient-1"></div>
-<div class="ambient ambient-2"></div>
-<div class="ambient ambient-3"></div>
-
-<!-- ══════════════════════════════════════
-     HEADER
-══════════════════════════════════════ -->
-<div class="page">
-  <header>
-    <h1 class="hero-name">Mission Control</h1>
-    <div class="status-badge">
-      <div class="pulse-dot"></div>
-      SYSTEM ONLINE
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="system-badge">
+      <span class="dot"></span>
+      System Online
     </div>
-  </header>
-</div>
+    <h1>Your AI Operations Team.<br /><em>Installed in 30 Days.</em></h1>
+    <p>You already believe in AI. What you don't have is a team of agents that work together — around you, around your business, all the time.</p>
+    <div class="hero-ctas">
+      <a href="#how" class="btn-primary">See How It Works ↓</a>
+      <a href="#contact" class="btn-secondary">Talk to Jason</a>
+    </div>
+  </section>
 
-<!-- ══════════════════════════════════════
-     THE TEAM (Org Chart)
-══════════════════════════════════════ -->
-<div class="page">
-  <section id="team">
-    <div class="section-label">Operations</div>
-    <h2 class="section-title">The Team</h2>
-
-    <div class="org-wrapper">
-
-      <!-- Jason at top -->
-      <div class="glass jason-card">
-        <div class="card-avatar">👤</div>
-        <div class="card-name">Jason M.G.</div>
-        <div class="card-title">Founder & Director</div>
+  <!-- PROBLEM -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <p class="section-label">The Problem</p>
+      <h2 class="section-title">Why your current setup isn't working</h2>
+      <p class="section-sub">You have tools. You have intention. What you're missing is a team that actually coordinates.</p>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="icon">🔌</div>
+          <h3>You're using AI tools. They don't talk to each other.</h3>
+        </div>
+        <div class="problem-card">
+          <div class="icon">📉</div>
+          <h3>Your operations leak. Deals go quiet. Updates don't go out. Things fall through the cracks.</h3>
+        </div>
+        <div class="problem-card">
+          <div class="icon">⚙️</div>
+          <h3>You're still the connective tissue. That's not scalable.</h3>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <!-- Connector SVG — hidden on very small screens, replaced by simple spacing -->
-      <svg class="org-connector" viewBox="0 0 900 60" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <linearGradient id="line-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.8"/>
-            <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.2"/>
-          </linearGradient>
-        </defs>
-        <!-- Vertical stem down from Jason -->
-        <line x1="450" y1="0" x2="450" y2="30" stroke="url(#line-grad)" stroke-width="1.5" filter="url(#glow)"/>
-        <!-- Horizontal bar -->
-        <line x1="113" y1="30" x2="787" y2="30" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.4" filter="url(#glow)"/>
-        <!-- Drops to each card: 4 positions -->
-        <line x1="113"  y1="30" x2="113"  y2="60" stroke="url(#line-grad)" stroke-width="1.5" filter="url(#glow)"/>
-        <line x1="337"  y1="30" x2="337"  y2="60" stroke="url(#line-grad)" stroke-width="1.5" filter="url(#glow)"/>
-        <line x1="563"  y1="30" x2="563"  y2="60" stroke="url(#line-grad)" stroke-width="1.5" filter="url(#glow)"/>
-        <line x1="787"  y1="30" x2="787"  y2="60" stroke="url(#line-grad)" stroke-width="1.5" filter="url(#glow)"/>
-      </svg>
-
-      <!-- 4 Agent Cards -->
-      <div class="agent-grid">
-
-        <!-- Clawd13 -->
-        <div class="glass agent-card">
-          <div class="agent-status"></div>
+  <!-- SOLUTION / AGENTS -->
+  <section class="solution" id="team">
+    <div class="container">
+      <p class="section-label">The Solution</p>
+      <h2 class="section-title">Meet Your Team</h2>
+      <p class="section-sub" style="margin: 0 auto 3.5rem;">Not one AI assistant. A coordinated team of agents — each with a name, a domain, and a Telegram bot of their own. These are Jason's actual agents.</p>
+      <div class="agents-grid">
+        <div class="agent-card">
           <span class="agent-emoji">☠️</span>
           <div class="agent-name">Clawd13</div>
-          <div class="agent-title">Chief of Staff</div>
-          <ul class="agent-bullets">
-            <li>Strategy & weekly planning</li>
-            <li>Coordinates the whole team</li>
-            <li>Prioritizes what matters most</li>
-          </ul>
+          <div class="agent-role">Chief of Staff</div>
+          <p class="agent-desc">Strategy, priorities, and coordination across the entire team. The one who keeps everything moving and nothing falling through.</p>
+          <span class="agent-tag"><span class="dot" style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px var(--green);"></span> Live on Telegram</span>
         </div>
-
-        <!-- ZachClaw -->
-        <div class="glass agent-card">
-          <div class="agent-status delay-1"></div>
+        <div class="agent-card">
           <span class="agent-emoji">📊</span>
           <div class="agent-name">ZachClaw</div>
-          <div class="agent-title">Marketing Specialist</div>
-          <ul class="agent-bullets">
-            <li>Facebook ads & funnels</li>
-            <li>Lead generation & CPL optimization</li>
-            <li>Show-up rate improvement</li>
-          </ul>
+          <div class="agent-role">Marketing Specialist</div>
+          <p class="agent-desc">Ads, funnels, lead generation, CPL optimization. Knows the numbers and knows what to do when they move.</p>
+          <span class="agent-tag"><span class="dot" style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px var(--green);"></span> Live on Telegram</span>
         </div>
-
-        <!-- Ledger -->
-        <div class="glass agent-card">
-          <div class="agent-status delay-2"></div>
+        <div class="agent-card">
           <span class="agent-emoji">💰</span>
           <div class="agent-name">Ledger</div>
-          <div class="agent-title">CFO</div>
-          <ul class="agent-bullets">
-            <li>Revenue & expense tracking</li>
-            <li>Cash flow monitoring</li>
-            <li>Weekly financial reporting</li>
-          </ul>
+          <div class="agent-role">CFO</div>
+          <p class="agent-desc">Revenue tracking, cash flow, financial reporting. Always knows what came in, what went out, and what it means.</p>
+          <span class="agent-tag"><span class="dot" style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px var(--green);"></span> Live on Telegram</span>
         </div>
-
-        <!-- Sentinel -->
-        <div class="glass agent-card">
-          <div class="agent-status delay-3"></div>
+        <div class="agent-card">
           <span class="agent-emoji">🛡️</span>
           <div class="agent-name">Sentinel</div>
-          <div class="agent-title">Security & Privacy</div>
-          <ul class="agent-bullets">
-            <li>Locks everything down</li>
-            <li>Data compartmentalization</li>
-            <li>Credential hygiene</li>
+          <div class="agent-role">Security &amp; Privacy</div>
+          <p class="agent-desc">Keeps everything locked down. Monitors access, flags exposure, protects the infrastructure and the data.</p>
+          <span class="agent-tag"><span class="dot" style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 6px var(--green);"></span> Live on Telegram</span>
+        </div>
+      </div>
+      <p class="agent-footer">Every agent has its own personality, its own domain, its own Telegram bot. <strong>They coordinate with each other.</strong> They never sleep.</p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="container">
+      <p class="section-label">How It Works</p>
+      <h2 class="section-title">From conversation to deployed team<br />in 30 days.</h2>
+      <p class="section-sub">Three phases. No ambiguity.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Discovery</h3>
+          <p>We map your operation. What's running, what's leaking, where you're losing time and money. You leave that conversation with clarity regardless of what comes next.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>We Build Your Team</h3>
+          <p>Custom agents, named and configured for your business. Roles defined. Personalities tuned. Integrations wired. 30 days from discovery to deployed.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>You Run Your Business</h3>
+          <p>Your agents handle their domains. You get briefed. You decide. They execute. You stop being the connective tissue.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT CLIENTS GET -->
+  <section id="features">
+    <div class="container">
+      <p class="section-label">What You Get</p>
+      <h2 class="section-title">Everything your operations team needs.<br />Nothing you don't.</h2>
+      <p class="section-sub">Designed to run without babysitting.</p>
+      <div class="features-list">
+        <div class="feature-item">
+          <span class="feature-icon">🤖</span>
+          <div class="feature-text">
+            <strong>Custom agent team (4–6 agents)</strong>
+            Named, configured, and built specifically for your business and how it actually runs.
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📱</span>
+          <div class="feature-text">
+            <strong>Telegram bot for every agent</strong>
+            Each agent is accessible from your phone, always. Text them like you text a teammate.
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔗</span>
+          <div class="feature-text">
+            <strong>Agents that coordinate with each other</strong>
+            Not just chat. Your agents share context, hand off work, and operate as a team — not in silos.
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📋</span>
+          <div class="feature-text">
+            <strong>Daily and weekly briefings</strong>
+            In whatever format works for you. Know what's happening without asking.
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔓</span>
+          <div class="feature-text">
+            <strong>You own everything — no lock-in</strong>
+            Built on OpenClaw (open source). If we part ways, you keep the entire setup. Zero dependency on us.
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🛠️</span>
+          <div class="feature-text">
+            <strong>30–60 days hands-on support</strong>
+            We stay close while the team settles in. Tune, adjust, add capabilities as needed.
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📅</span>
+          <div class="feature-text">
+            <strong>Monthly check-ins</strong>
+            Ongoing strategic alignment. As your business evolves, your agents evolve with it.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <p class="section-label">Pricing</p>
+      <h2 class="section-title">Straightforward. No surprises.</h2>
+      <p class="section-sub">Setup is one-time. Monthly is ongoing support and access. You own the infrastructure either way.</p>
+      <div class="pricing-grid">
+
+        <div class="pricing-card">
+          <div class="pricing-tier">Starter</div>
+          <div class="pricing-price">
+            <span class="setup">$2,500</span>
+            <span class="period">setup</span>
+          </div>
+          <div class="pricing-monthly">then <strong>$500/mo</strong></div>
+          <hr class="pricing-divider" />
+          <ul class="pricing-features">
+            <li>2 custom agents</li>
+            <li>Telegram bots for each agent</li>
+            <li>30-day hands-on support</li>
+            <li>Monthly check-in</li>
+            <li>You own the full setup</li>
           </ul>
+          <a href="#contact" class="pricing-cta pricing-cta-secondary">Get Started →</a>
         </div>
 
-      </div><!-- /agent-grid -->
-    </div><!-- /org-wrapper -->
-  </section>
-</div>
-
-<!-- ══════════════════════════════════════
-     HOW IT WORKS
-══════════════════════════════════════ -->
-<section id="how">
-  <div class="page" style="max-width:1100px;margin:0 auto;padding:0 24px;">
-    <div class="section-label">Workflow</div>
-    <h2 class="section-title">How It Works</h2>
-
-    <!--
-      Flow layout (SVG-based for desktop, stacked for mobile):
-      Jason → [arrow] → Clawd13 → [arrow] → 3 specialists → [arrow] → Results back to Jason
-    -->
-
-    <!-- Desktop SVG flow diagram -->
-    <div style="overflow:hidden;">
-      <svg id="flow-svg" viewBox="0 0 1060 260" preserveAspectRatio="xMidYMid meet"
-           style="width:100%;max-width:1060px;display:block;margin:0 auto;overflow:visible;"
-           aria-label="Workflow diagram">
-        <defs>
-          <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#00d4ff" opacity="0.7"/>
-          </marker>
-          <marker id="arrow-up" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#7b61ff" opacity="0.7"/>
-          </marker>
-          <filter id="glow2" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-
-        <!-- ── Node: Jason (left) ── -->
-        <rect x="10" y="90" width="160" height="80" rx="12" fill="rgba(0,212,255,0.06)" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
-        <text x="90" y="122" text-anchor="middle" font-family="Space Grotesk" font-size="22">👤</text>
-        <text x="90" y="145" text-anchor="middle" fill="#e2e8f4" font-family="Space Grotesk" font-weight="600" font-size="13">Jason M.G.</text>
-        <text x="90" y="162" text-anchor="middle" fill="#8899b4" font-family="Space Grotesk" font-size="10">Sets Direction</text>
-
-        <!-- Arrow Jason → Clawd13 -->
-        <line x1="172" y1="130" x2="225" y2="130" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arrow)" filter="url(#glow2)"/>
-
-        <!-- ── Node: Clawd13 (center) ── -->
-        <rect x="228" y="90" width="160" height="80" rx="12" fill="rgba(0,212,255,0.06)" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
-        <text x="308" y="122" text-anchor="middle" font-family="Space Grotesk" font-size="22">☠️</text>
-        <text x="308" y="145" text-anchor="middle" fill="#e2e8f4" font-family="Space Grotesk" font-weight="700" font-size="13">Clawd13</text>
-        <text x="308" y="162" text-anchor="middle" fill="#00d4ff" font-family="Space Grotesk" font-size="10">Chief of Staff</text>
-
-        <!-- Arrow Clawd13 → specialists (3 branches) -->
-        <!-- Vertical line out from Clawd13 -->
-        <line x1="390" y1="130" x2="448" y2="130" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.5" filter="url(#glow2)"/>
-        <!-- Fan: top branch (ZachClaw) -->
-        <line x1="448" y1="130" x2="448" y2="50" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.4" filter="url(#glow2)"/>
-        <line x1="448" y1="50" x2="495" y2="50" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.4" marker-end="url(#arrow)" filter="url(#glow2)"/>
-        <!-- Fan: middle branch (Ledger) -->
-        <line x1="448" y1="130" x2="495" y2="130" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#arrow)" filter="url(#glow2)"/>
-        <!-- Fan: bottom branch (Sentinel) -->
-        <line x1="448" y1="130" x2="448" y2="210" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.4" filter="url(#glow2)"/>
-        <line x1="448" y1="210" x2="495" y2="210" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.4" marker-end="url(#arrow)" filter="url(#glow2)"/>
-
-        <!-- ── Node: ZachClaw (top right) ── -->
-        <rect x="498" y="10" width="145" height="78" rx="12" fill="rgba(123,97,255,0.07)" stroke="rgba(123,97,255,0.25)" stroke-width="1"/>
-        <text x="570" y="38" text-anchor="middle" font-family="Space Grotesk" font-size="18">📊</text>
-        <text x="570" y="58" text-anchor="middle" fill="#e2e8f4" font-family="Space Grotesk" font-weight="600" font-size="12">ZachClaw</text>
-        <text x="570" y="74" text-anchor="middle" fill="#8899b4" font-family="Space Grotesk" font-size="10">Marketing</text>
-
-        <!-- ── Node: Ledger (middle right) ── -->
-        <rect x="498" y="90" width="145" height="80" rx="12" fill="rgba(123,97,255,0.07)" stroke="rgba(123,97,255,0.25)" stroke-width="1"/>
-        <text x="570" y="122" text-anchor="middle" font-family="Space Grotesk" font-size="18">💰</text>
-        <text x="570" y="144" text-anchor="middle" fill="#e2e8f4" font-family="Space Grotesk" font-weight="600" font-size="12">Ledger</text>
-        <text x="570" y="160" text-anchor="middle" fill="#8899b4" font-family="Space Grotesk" font-size="10">Finances</text>
-
-        <!-- ── Node: Sentinel (bottom right) ── -->
-        <rect x="498" y="172" width="145" height="78" rx="12" fill="rgba(123,97,255,0.07)" stroke="rgba(123,97,255,0.25)" stroke-width="1"/>
-        <text x="570" y="200" text-anchor="middle" font-family="Space Grotesk" font-size="18">🛡️</text>
-        <text x="570" y="220" text-anchor="middle" fill="#e2e8f4" font-family="Space Grotesk" font-weight="600" font-size="12">Sentinel</text>
-        <text x="570" y="236" text-anchor="middle" fill="#8899b4" font-family="Space Grotesk" font-size="10">Security</text>
-
-        <!-- Specialists → report back to Clawd13 (return lines) -->
-        <line x1="645" y1="49" x2="720" y2="49" stroke="#7b61ff" stroke-width="1" stroke-opacity="0.35" filter="url(#glow2)"/>
-        <line x1="720" y1="49" x2="720" y2="130" stroke="#7b61ff" stroke-width="1" stroke-opacity="0.35" filter="url(#glow2)"/>
-        <line x1="645" y1="130" x2="720" y2="130" stroke="#7b61ff" stroke-width="1.5" stroke-opacity="0.4" filter="url(#glow2)"/>
-        <line x1="645" y1="211" x2="720" y2="211" stroke="#7b61ff" stroke-width="1" stroke-opacity="0.35" filter="url(#glow2)"/>
-        <line x1="720" y1="211" x2="720" y2="130" stroke="#7b61ff" stroke-width="1" stroke-opacity="0.35" filter="url(#glow2)"/>
-
-        <!-- Arrow from collection point → Results node -->
-        <line x1="720" y1="130" x2="780" y2="130" stroke="#7b61ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#arrow-up)" filter="url(#glow2)"/>
-
-        <!-- ── Node: Results ── -->
-        <rect x="782" y="90" width="155" height="80" rx="12" fill="rgba(0,255,136,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="1"/>
-        <text x="860" y="122" text-anchor="middle" font-family="Space Grotesk" font-size="22">✅</text>
-        <text x="860" y="144" text-anchor="middle" fill="#e2e8f4" font-family="Space Grotesk" font-weight="600" font-size="13">Results</text>
-        <text x="860" y="162" text-anchor="middle" fill="#8899b4" font-family="Space Grotesk" font-size="10">Back to Jason</text>
-
-        <!-- Arrow Results → Jason (loop) -->
-        <path d="M 937 90 Q 990 -20 530 -35 Q 70 -20 90 89" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.2" fill="none" stroke-dasharray="6 4" filter="url(#glow2)"/>
-
-        <!-- Labels on arrows -->
-        <text x="196" y="120" text-anchor="middle" fill="#00d4ff" font-family="Space Grotesk" font-size="9" opacity="0.6">Direction</text>
-        <text x="416" y="120" text-anchor="middle" fill="#00d4ff" font-family="Space Grotesk" font-size="9" opacity="0.6">Delegates</text>
-        <text x="752" y="120" text-anchor="middle" fill="#7b61ff" font-family="Space Grotesk" font-size="9" opacity="0.6">Reports</text>
-      </svg>
-    </div>
-
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════
-     IN MOTION (Operations Board)
-══════════════════════════════════════ -->
-<div class="page">
-  <section id="ops">
-    <div class="section-label">Active Operations</div>
-    <h2 class="section-title">In Motion</h2>
-
-    <div class="ops-grid">
-
-      <!-- Card 1 -->
-      <div class="glass ops-card">
-        <div class="ops-card-header">
-          <div class="ops-card-left">
-            <div class="ops-icon cyan">📣</div>
-            <div>
-              <div class="ops-name">Lead Generation Campaign</div>
-              <div class="ops-agent">Owner: ZachClaw · Marketing</div>
-            </div>
+        <div class="pricing-card featured">
+          <div class="pricing-badge">⭐ Most Popular</div>
+          <div class="pricing-tier">Standard</div>
+          <div class="pricing-price">
+            <span class="setup">$4,500</span>
+            <span class="period">setup</span>
           </div>
-          <div class="ops-badge running"><div class="badge-dot"></div>RUNNING</div>
+          <div class="pricing-monthly">then <strong>$1,000/mo</strong></div>
+          <hr class="pricing-divider" />
+          <ul class="pricing-features">
+            <li>Full team — 4 to 5 agents</li>
+            <li>Telegram bots for each agent</li>
+            <li>Agent-to-agent coordination</li>
+            <li>Daily or weekly briefings</li>
+            <li>60-day hands-on support</li>
+            <li>Monthly check-in</li>
+            <li>You own the full setup</li>
+          </ul>
+          <a href="#contact" class="pricing-cta pricing-cta-primary">Get Started →</a>
         </div>
-        <div class="ops-progress-bar"><div class="ops-progress-fill" style="width:72%"></div></div>
-        <div class="ops-desc">Active ad sets in testing. Funnel metrics tracked daily. Iterating on creative and targeting for improved cost-per-lead.</div>
-      </div>
 
-      <!-- Card 2 -->
-      <div class="glass ops-card">
-        <div class="ops-card-header">
-          <div class="ops-card-left">
-            <div class="ops-icon purple">💼</div>
-            <div>
-              <div class="ops-name">Financial Audit</div>
-              <div class="ops-agent">Owner: Ledger · CFO</div>
-            </div>
+        <div class="pricing-card">
+          <div class="pricing-tier">Premium</div>
+          <div class="pricing-price">
+            <span class="setup">$7,500</span>
+            <span class="period">setup</span>
           </div>
-          <div class="ops-badge active"><div class="badge-dot"></div>IN REVIEW</div>
+          <div class="pricing-monthly">then <strong>$1,500/mo</strong></div>
+          <hr class="pricing-divider" />
+          <ul class="pricing-features">
+            <li>Full team — up to 6 agents</li>
+            <li>Custom skills and integrations</li>
+            <li>Agent-to-agent coordination</li>
+            <li>Daily briefings, custom format</li>
+            <li>60-day hands-on support</li>
+            <li>Quarterly strategy sessions</li>
+            <li>You own the full setup</li>
+          </ul>
+          <a href="#contact" class="pricing-cta pricing-cta-secondary">Get Started →</a>
         </div>
-        <div class="ops-progress-bar"><div class="ops-progress-fill" style="width:55%"></div></div>
-        <div class="ops-desc">Weekly revenue and expense reconciliation in progress. Cash flow projections updated. Variance analysis underway.</div>
-      </div>
 
-      <!-- Card 3 -->
-      <div class="glass ops-card">
-        <div class="ops-card-header">
-          <div class="ops-card-left">
-            <div class="ops-icon cyan">🛡️</div>
-            <div>
-              <div class="ops-name">Security Hardening</div>
-              <div class="ops-agent">Owner: Sentinel · Security</div>
-            </div>
-          </div>
-          <div class="ops-badge running"><div class="badge-dot"></div>MONITORING</div>
-        </div>
-        <div class="ops-progress-bar"><div class="ops-progress-fill" style="width:88%"></div></div>
-        <div class="ops-desc">Continuous credential hygiene monitoring active. Data compartmentalization reviewed. All access logs nominal.</div>
       </div>
-
-      <!-- Card 4 -->
-      <div class="glass ops-card">
-        <div class="ops-card-header">
-          <div class="ops-card-left">
-            <div class="ops-icon purple">🚀</div>
-            <div>
-              <div class="ops-name">Business Growth Strategy</div>
-              <div class="ops-agent">Owner: Clawd13 · Chief of Staff</div>
-            </div>
-          </div>
-          <div class="ops-badge active"><div class="badge-dot"></div>PLANNING</div>
-        </div>
-        <div class="ops-progress-bar"><div class="ops-progress-fill" style="width:40%"></div></div>
-        <div class="ops-desc">Weekly leverage plan in development. Top 5% activities identified and prioritized. Team briefings scheduled.</div>
-      </div>
-
     </div>
   </section>
-</div>
 
-<!-- ══════════════════════════════════════
-     FOOTER
-══════════════════════════════════════ -->
-<footer>
-  <div class="page">
-    Powered by <span>OpenClaw</span> &nbsp;·&nbsp; Built by <span>Clawd13</span>
-  </div>
-</footer>
+  <!-- DEMO PROOF -->
+  <section class="demo-proof" id="proof">
+    <div class="container">
+      <p class="section-label">Live Proof</p>
+      <h2 class="section-title" style="margin-bottom: 2.5rem;">This isn't a pitch deck.<br />It's a live system.</h2>
+      <div class="proof-box">
+        <div class="proof-quote">"The best demo is Jason's own setup."</div>
+        <p class="proof-body">Jason runs a 5-agent StaffOS team that handles marketing, finances, security, strategy, and coordination for his own business. When he meets with you, you're seeing the product live — not a mockup. That's on purpose.</p>
+        <div class="proof-agents">
+          <span class="proof-agent-chip">☠️ Clawd13 — Chief of Staff</span>
+          <span class="proof-agent-chip">📊 ZachClaw — Marketing</span>
+          <span class="proof-agent-chip">💰 Ledger — CFO</span>
+          <span class="proof-agent-chip">🛡️ Sentinel — Security</span>
+          <span class="proof-agent-chip">🌐 Atlas — Strategy</span>
+        </div>
+        <div class="proof-client">
+          <div class="proof-client-label">Already in the Field</div>
+          <p class="proof-client-body">Jason has designed a custom team — <strong>REALM, SCROLL, BEACON, SLATE, and ORACLE</strong> — for an entertainment and IP company. That's a real engagement, not a concept. The work has already started.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- ══════════════════════════════════════
-     SCRIPTS
-══════════════════════════════════════ -->
-<script>
-  // Generate starfield
-  (function() {
-    const container = document.getElementById('stars');
-    const count = 120;
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      const size = Math.random() * 2 + 1;
-      s.style.cssText = [
-        `left:${Math.random()*100}%`,
-        `top:${Math.random()*100}%`,
-        `width:${size}px`,
-        `height:${size}px`,
-        `--d:${(Math.random()*4+2).toFixed(1)}s`,
-        `--delay:${(Math.random()*5).toFixed(1)}s`,
-        `--max-op:${(Math.random()*0.5+0.2).toFixed(2)}`
-      ].join(';');
-      container.appendChild(s);
-    }
-  })();
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="contact-inner">
+        <p class="section-label">Ready to Move</p>
+        <h2 class="section-title">Let's figure out if this fits.</h2>
+        <p class="section-sub">One conversation. No sales funnel. Jason will ask about your operation, tell you what makes sense, and you'll know quickly whether this is the right move.</p>
+        <div class="contact-options">
+          <a href="mailto:jason@staffos.ai" class="btn-primary">Email Jason →</a>
+          <a href="https://jmg424.github.io/staffos" class="btn-secondary">See the Live Demo</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  // Subtle card glow on mouse move (desktop)
-  document.querySelectorAll('.glass').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const rect = card.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-      const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-      card.style.setProperty('--mx', x + '%');
-      card.style.setProperty('--my', y + '%');
-    });
-  });
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <strong>StaffOS</strong> — AI Operations Teams for Entrepreneurs
+      </div>
+      <div class="footer-links">
+        <a href="#team">The Team</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#proof">Live Proof</a>
+        <a href="mailto:jason@staffos.ai">Talk to Jason</a>
+      </div>
+      <div class="footer-built">
+        Built on <a href="https://openclaw.ai" target="_blank" rel="noopener">OpenClaw</a> — open source, you own it.
+      </div>
+    </div>
+  </footer>
 
-  // Animated SVG line drawing on scroll into view
-  const flowSvg = document.getElementById('flow-svg');
-  if (flowSvg && 'IntersectionObserver' in window) {
-    const lines = flowSvg.querySelectorAll('line, path');
-    lines.forEach(el => {
-      const len = el.getTotalLength ? el.getTotalLength() : 200;
-      el.style.strokeDasharray = len;
-      el.style.strokeDashoffset = len;
-      el.style.transition = 'stroke-dashoffset 1.2s ease';
-    });
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          lines.forEach((el, i) => {
-            setTimeout(() => { el.style.strokeDashoffset = '0'; }, i * 60);
-          });
-          obs.disconnect();
-        }
-      });
-    }, { threshold: 0.2 });
-    obs.observe(flowSvg);
-  }
-</script>
 </body>
 </html>
