@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StaffOS — Jason's AI Operating System</title>
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #1e2d45;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --accent3: #10b981;
+      --accent4: #f59e0b;
+      --accent5: #ef4444;
+      --accent6: #ec4899;
+      --text: #f0f4ff;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --radius: 14px;
+      --shadow: 0 4px 32px rgba(0,0,0,0.5);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-top: 12px;
+    }
+    header .logo {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    header h1 {
+      font-size: clamp(26px, 5vw, 42px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.15;
+    }
+    header p {
+      margin-top: 10px;
+      color: var(--text2);
+      font-size: 15px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+    header .badge {
+      display: inline-block;
+      margin-top: 14px;
+      background: linear-gradient(135deg, #1e3a5f, #2d1b69);
+      border: 1px solid #3b82f680;
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text3);
+      font-weight: 700;
+      margin-bottom: 14px;
+      margin-top: 40px;
+      padding-left: 4px;
+    }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 701px) and (max-width: 1000px) {
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .card-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+    .card-body {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+    .card-body ul { padding-left: 18px; }
+    .card-body li { margin-bottom: 4px; }
+    .tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 3px 3px 0 0;
+    }
+
+    /* ── COLOR ACCENTS ── */
+    .blue   { --c: var(--accent); }
+    .purple { --c: var(--accent2); }
+    .green  { --c: var(--accent3); }
+    .amber  { --c: var(--accent4); }
+    .red    { --c: var(--accent5); }
+    .pink   { --c: var(--accent6); }
+    .teal   { --c: #06b6d4; }
+
+    .card-icon-bg { background: color-mix(in srgb, var(--c) 15%, transparent); }
+    .card-accent { border-top: 3px solid var(--c); }
+    .tag-colored { background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c); }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 90px;
+      max-width: 110px;
+    }
+    .flow-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 7px;
+      border: 2px solid transparent;
+    }
+    .flow-label {
+      font-size: 11px;
+      color: var(--text2);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .flow-arrow {
+      font-size: 20px;
+      color: var(--text3);
+      margin: 0 4px;
+      align-self: center;
+      padding-bottom: 18px;
+    }
+    @media (max-width: 600px) {
+      .flow-row { gap: 6px; }
+      .flow-step { min-width: 70px; max-width: 80px; }
+      .flow-circle { width: 42px; height: 42px; font-size: 18px; }
+      .flow-label { font-size: 10px; }
+      .flow-arrow { font-size: 16px; padding-bottom: 14px; }
+    }
+
+    /* ── BIG FLOW ── */
+    .hub-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      box-shadow: var(--shadow);
+    }
+    .hub-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .hub-node {
+      background: linear-gradient(135deg, #1d3461, #2d1b69);
+      border: 2px solid #3b82f6;
+      border-radius: 16px;
+      padding: 14px 24px;
+      text-align: center;
+      box-shadow: 0 0 24px #3b82f640;
+    }
+    .hub-node .emoji { font-size: 28px; }
+    .hub-node .name { font-size: 16px; font-weight: 800; color: #fff; margin-top: 4px; }
+    .hub-node .role { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .hub-spokes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .hub-spoke {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .hub-line {
+      width: 2px;
+      height: 28px;
+      background: linear-gradient(to bottom, #3b82f680, transparent);
+    }
+    .spoke-node {
+      border: 1px solid;
+      border-radius: 12px;
+      padding: 10px 14px;
+      text-align: center;
+      min-width: 110px;
+      background: var(--surface2);
+    }
+    .spoke-node .s-emoji { font-size: 20px; }
+    .spoke-node .s-name { font-size: 13px; font-weight: 700; margin-top: 3px; }
+    .spoke-node .s-role { font-size: 10px; color: var(--text2); margin-top: 2px; line-height: 1.3; }
+
+    /* ── BACKUP TIMELINE ── */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 18px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -22px;
+      top: 5px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .timeline-item:nth-child(2)::before { background: var(--accent2); }
+    .timeline-item:nth-child(3)::before { background: var(--accent3); }
+    .timeline-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .timeline-desc {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    /* ── STATUS PILL ── */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; } 50% { opacity:0.4; }
+    }
+    .status-live { background: #052e16; color: #4ade80; border: 1px solid #166534; }
+    .status-live .status-dot { background: #4ade80; }
+    .status-building { background: #1c1917; color: #fbbf24; border: 1px solid #78350f; }
+    .status-building .status-dot { background: #fbbf24; }
+    .status-planned { background: #1e1b4b; color: #818cf8; border: 1px solid #3730a3; }
+    .status-planned .status-dot { background: #818cf8; animation: none; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      color: var(--text3);
+      font-size: 12px;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--text2); }
+
+    /* ── MAX WIDTH ── */
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── DATA ROW ── */
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .data-row:last-child { border-bottom: none; }
+    .data-key { color: var(--text2); }
+    .data-val { font-weight: 600; color: var(--text); }
+
+    /* ── PRIORITY BAR ── */
+    .priority-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .priority-item:last-child { border-bottom: none; }
+    .p-num {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .p-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .p-desc  { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ══ HEADER ══ -->
+  <header>
+    <div class="logo">StaffOS · System Architecture</div>
+    <h1>Jason's AI Operating System</h1>
+    <p>A full-stack AI agent team running Jason's businesses — with secure backup, coordinated routing, and a live demo of what StaffOS delivers for clients.</p>
+    <span class="badge">⚡ Live as of March 2026</span>
+  </header>
+
+  <!-- ══ COMMAND STRUCTURE ══ -->
+  <div class="section-label">Command Structure — How the Team Coordinates</div>
+  <div class="hub-diagram">
+    <div class="hub-center">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700">Central Command</div>
+      <div class="hub-node">
+        <div class="emoji">🧠</div>
+        <div class="name">Clawd13</div>
+        <div class="role">Main Orchestrator · Memory · Routing · System Health</div>
+      </div>
+      <div style="height:24px;width:2px;background:linear-gradient(to bottom,#3b82f6,transparent);margin:0 auto;"></div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;">All bots coordinate through Clawd13</div>
+    </div>
+    <div class="hub-spokes">
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#3b82f6;">
+          <div class="s-emoji">⚡</div>
+          <div class="s-name" style="color:#60a5fa">Jr</div>
+          <div class="s-role">Fast Lane<br>Email triage · Quick tasks</div>
+        </div>
+      </div>
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#8b5cf6;">
+          <div class="s-emoji">🔭</div>
+          <div class="s-name" style="color:#a78bfa">Atlas</div>
+          <div class="s-role">Agency Strategy<br>Client design · Course</div>
+        </div>
+      </div>
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#ec4899;">
+          <div class="s-emoji">📣</div>
+          <div class="s-name" style="color:#f472b6">Zach</div>
+          <div class="s-role">Marketing<br>FB Ads · Funnels · Copy</div>
+        </div>
+      </div>
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#10b981;">
+          <div class="s-emoji">💰</div>
+          <div class="s-name" style="color:#34d399">Ledger</div>
+          <div class="s-role">Finances<br>P&amp;L · Cash flow · Tracking</div>
+        </div>
+      </div>
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#ef4444;">
+          <div class="s-emoji">🔒</div>
+          <div class="s-name" style="color:#f87171">Sentinel</div>
+          <div class="s-role">Security<br>Audits · Backup verify</div>
+        </div>
+      </div>
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#f59e0b;">
+          <div class="s-emoji">🌸</div>
+          <div class="s-name" style="color:#fbbf24">Malu</div>
+          <div class="s-role">Executive Asst<br>Schedules · Family logistics</div>
+        </div>
+      </div>
+
+      <div class="hub-spoke">
+        <div class="hub-line"></div>
+        <div class="spoke-node" style="border-color:#06b6d4;">
+          <div class="s-emoji">🧙</div>
+          <div class="s-name" style="color:#22d3ee">Yoda</div>
+          <div class="s-role">Senior Advisor<br>High-stakes · First principles</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ AGENT CARDS ══ -->
+  <div class="section-label">Agent Roster — Who They Are &amp; What They Own</div>
+  <div class="grid-3">
+
+    <div class="card blue card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg blue">🧠</div>
+        <div>
+          <div class="card-title">Clawd13</div>
+          <div class="card-sub">Main Orchestrator</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>Long-term memory &amp; system health</li>
+          <li>Agent routing &amp; task coordination</li>
+          <li>Infrastructure decisions (exec only)</li>
+          <li>Multi-step deep-context work</li>
+          <li>Mimi's Market expansion strategy</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-colored blue">Claude Sonnet</span>
+          <span class="status status-live" style="margin-left:4px;"><span class="status-dot"></span>Live</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card purple card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg purple">🔭</div>
+        <div>
+          <div class="card-title">Atlas</div>
+          <div class="card-sub">Agency &amp; Course Strategist</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>OpenClaw ecosystem intelligence</li>
+          <li>Client agent team design</li>
+          <li>Pricing &amp; positioning strategy</li>
+          <li>Course curriculum development</li>
+          <li>Competitive intel &amp; market research</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-colored purple">Claude Sonnet</span>
+          <span class="status status-live" style="margin-left:4px;"><span class="status-dot"></span>Live</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pink card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg pink">📣</div>
+        <div>
+          <div class="card-title">Zach</div>
+          <div class="card-sub">Marketing Agent</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>Facebook Ads (API access)</li>
+          <li>Funnel optimization</li>
+          <li>Email sequences &amp; copy</li>
+          <li>Show-up rate improvement</li>
+          <li>Webinar copy &amp; structure</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-colored pink">Claude Sonnet</span>
+          <span class="status status-live" style="margin-left:4px;"><span class="status-dot"></span>Live</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg green">💰</div>
+        <div>
+          <div class="card-title">Ledger</div>
+          <div class="card-sub">CFO / Finance Agent</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>Personal + business finances</li>
+          <li>Michelle's P&amp;L &amp; ad spend</li>
+          <li>$20K loan paydown tracking</li>
+          <li>Cash flow forecasting</li>
+          <li>Budget vs. actual reporting</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-colored green">Claude Sonnet</span>
+          <span class="status status-live" style="margin-left:4px;"><span class="status-dot"></span>Live</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card red card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg red">🔒</div>
+        <div>
+          <div class="card-title">Sentinel</div>
+          <div class="card-sub">Security Agent</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>Security audits &amp; monitoring</li>
+          <li>Backup verification (3x daily)</li>
+          <li>Anomaly detection</li>
+          <li>Incident response &amp; reporting</li>
+          <li>Never acts alone — always flags Jason</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-colored red">Claude Sonnet</span>
+          <span class="status status-live" style="margin-left:4px;"><span class="status-dot"></span>Live</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card amber card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg amber">🌸</div>
+        <div>
+          <div class="card-title">Malu</div>
+          <div class="card-sub">Executive Assistant</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>Michelle's calendar &amp; appointments</li>
+          <li>Jason's calendar coordination</li>
+          <li>Family logistics (kids, school)</li>
+          <li>Personal reminders &amp; gifts</li>
+          <li>Household coordination</li>
+        </ul>
+        <div style="margin-top:10px;">
+          <span class="tag tag-colored amber">Claude Sonnet</span>
+          <span class="status status-live" style="margin-left:4px;"><span class="status-dot"></span>Live</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SIGNAL FLOW ══ -->
+  <div class="section-label">How a Request Flows Through the System</div>
+  <div class="flow">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:18px;font-weight:600;">Example: Jason asks about a financial question via Telegram</div>
+    <div class="flow-row">
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1e3a5f;border-color:#3b82f6;">📱</div>
+        <div class="flow-label">Jason sends<br>message<br>(Telegram)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1d1b4b;border-color:#8b5cf6;">⚙️</div>
+        <div class="flow-label">OpenClaw<br>Gateway<br>receives</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1d3461;border-color:#3b82f6;">🧠</div>
+        <div class="flow-label">Clawd13<br>reads context<br>&amp; routes</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#052e16;border-color:#10b981;">💰</div>
+        <div class="flow-label">Ledger<br>handles<br>request</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1e2d3d;border-color:#64748b;">📝</div>
+        <div class="flow-label">Answer<br>+ memory<br>updated</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1e3a5f;border-color:#3b82f6;">📱</div>
+        <div class="flow-label">Response<br>delivered<br>to Jason</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BUSINESS COVERAGE ══ -->
+  <div class="section-label">Business Coverage — What Each Business Has</div>
+  <div class="grid-2">
+
+    <div class="card pink card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg pink">✨</div>
+        <div>
+          <div class="card-title">Michelle Galoob Consulting</div>
+          <div class="card-sub">Online Education · ~$6K/mo currently → $100K+ target</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="data-row"><span class="data-key">Ads &amp; Funnels</span><span class="data-val">🎯 Zach</span></div>
+        <div class="data-row"><span class="data-key">Calendar / Scheduling</span><span class="data-val">🌸 Malu</span></div>
+        <div class="data-row"><span class="data-key">Revenue Tracking</span><span class="data-val">💰 Ledger</span></div>
+        <div class="data-row"><span class="data-key">Strategy</span><span class="data-val">🧠 Clawd13</span></div>
+        <div class="data-row"><span class="data-key">Funnel</span><span class="data-val">FB Ads → Lead Magnet → Group Reading → $497 Webinar</span></div>
+        <div class="data-row"><span class="data-key">Current CPL</span><span class="data-val" style="color:#4ade80;">$1.04 (today)</span></div>
+        <div style="margin-top:10px;">
+          <span class="status status-live"><span class="status-dot"></span>Active &amp; Growing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card purple card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg purple">🏢</div>
+        <div>
+          <div class="card-title">StaffOS Agency + Course</div>
+          <div class="card-sub">Done-for-you AI agent teams for entrepreneurs</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="data-row"><span class="data-key">Strategy &amp; Design</span><span class="data-val">🔭 Atlas</span></div>
+        <div class="data-row"><span class="data-key">Client Proposals</span><span class="data-val">🔭 Atlas</span></div>
+        <div class="data-row"><span class="data-key">Course Partner</span><span class="data-val">$5K course, 50% direct rev share</span></div>
+        <div class="data-row"><span class="data-key">Revenue Model</span><span class="data-val">Agency + Course (Beta → Evergreen)</span></div>
+        <div class="data-row"><span class="data-key">Demo</span><span class="data-val">This system — Jason's own setup</span></div>
+        <div style="margin-top:10px;">
+          <span class="status status-building"><span class="status-dot"></span>Building Now</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══ SECURITY & BACKUP ══ -->
+  <div class="section-label">Security &amp; Backup Architecture</div>
+
+  <div class="grid-2">
+    <div class="card green card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg green">☁️</div>
+        <div>
+          <div class="card-title">Backup Schedule</div>
+          <div class="card-sub">3× daily automated → GitHub private repo</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-title">3:00 AM UTC (11 PM ET)</div>
+            <div class="timeline-desc">Overnight backup — full workspace snapshot pushed to GitHub</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">11:00 AM UTC (7 AM ET)</div>
+            <div class="timeline-desc">Morning backup — fresh state after overnight operations</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">7:00 PM UTC (3 PM ET)</div>
+            <div class="timeline-desc">Afternoon backup — mid-day activity captured</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <span class="status status-live"><span class="status-dot"></span>Operational since Mar 22, 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card red card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg red">🔐</div>
+        <div>
+          <div class="card-title">What Gets Backed Up</div>
+          <div class="card-sub">7 agent workspaces · config · memory · sessions</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="data-row"><span class="data-key">All agent workspaces</span><span class="data-val" style="color:#4ade80;">✓ Included</span></div>
+        <div class="data-row"><span class="data-key">OpenClaw config template</span><span class="data-val" style="color:#4ade80;">✓ Tokens scrubbed</span></div>
+        <div class="data-row"><span class="data-key">Cron job definitions</span><span class="data-val" style="color:#4ade80;">✓ Included</span></div>
+        <div class="data-row"><span class="data-key">Agent sessions &amp; memory</span><span class="data-val" style="color:#4ade80;">✓ Included</span></div>
+        <div class="data-row"><span class="data-key">API keys / auth tokens</span><span class="data-val" style="color:#f87171;">✗ Excluded (security)</span></div>
+        <div class="data-row"><span class="data-key">Log files / media queue</span><span class="data-val" style="color:#94a3b8;">✗ Excluded (regeneratable)</span></div>
+        <div style="margin-top:10px;">
+          <span class="status status-building" style="font-size:10px;"><span class="status-dot"></span>Secondary off-site backup planned (Backblaze/S3)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BACKUP FLOW ══ -->
+  <div style="margin-top:14px;" class="flow">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:18px;font-weight:600;">Backup &amp; Recovery Flow</div>
+    <div class="flow-row">
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#052e16;border-color:#10b981;">⏰</div>
+        <div class="flow-label">Cron fires<br>(3x daily)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1c1917;border-color:#f59e0b;">📁</div>
+        <div class="flow-label">backup.sh<br>runs on<br>server</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1e1b4b;border-color:#8b5cf6;">🔑</div>
+        <div class="flow-label">Tokens<br>scrubbed<br>from config</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#0c1a2e;border-color:#1d4ed8;">📤</div>
+        <div class="flow-label">Git push →<br>Private<br>GitHub repo</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#1f0000;border-color:#ef4444;">🔍</div>
+        <div class="flow-label">Sentinel<br>verifies<br>commit</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-circle" style="background:#052e16;border-color:#10b981;">✅</div>
+        <div class="flow-label">Backup<br>confirmed<br>good</div>
+      </div>
+    </div>
+    <div style="margin-top:18px;border-top:1px solid var(--border);padding-top:16px;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;font-weight:600;">Disaster Recovery — If Instance Is Lost</div>
+      <div class="flow-row">
+        <div class="flow-step">
+          <div class="flow-circle" style="background:#1f0000;border-color:#ef4444;">🆕</div>
+          <div class="flow-label">Fresh<br>OpenClaw<br>install</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-circle" style="background:#0c1a2e;border-color:#1d4ed8;">📥</div>
+          <div class="flow-label">Clone<br>backup<br>from GitHub</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-circle" style="background:#1c1917;border-color:#f59e0b;">📋</div>
+          <div class="flow-label">Restore<br>workspaces<br>manually</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-circle" style="background:#1e1b4b;border-color:#8b5cf6;">🔑</div>
+          <div class="flow-label">Re-enter<br>secrets<br>(manual)</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-circle" style="background:#052e16;border-color:#10b981;">🚀</div>
+          <div class="flow-label">Restart<br>gateway<br>&amp; verify</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══ ROUTING RULES ══ -->
+  <div class="section-label">Routing Rules — Who Handles What</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="grid-2" style="gap:0;">
+        <div>
+          <div class="data-row"><span class="data-key">📣 Marketing, Ads, Funnels, Copy</span><span class="data-val">→ Zach</span></div>
+          <div class="data-row"><span class="data-key">💰 Financial questions, P&amp;L, expenses</span><span class="data-val">→ Ledger</span></div>
+          <div class="data-row"><span class="data-key">🔒 Security, audits, incidents</span><span class="data-val">→ Sentinel</span></div>
+          <div class="data-row"><span class="data-key">🔭 Research, competitive intel, strategy</span><span class="data-val">→ Atlas</span></div>
+        </div>
+        <div>
+          <div class="data-row"><span class="data-key">🌸 Calendar, family logistics</span><span class="data-val">→ Malu</span></div>
+          <div class="data-row"><span class="data-key">⚡ Quick facts, note capture</span><span class="data-val">→ Jr</span></div>
+          <div class="data-row"><span class="data-key">🧙 High-stakes strategic advice</span><span class="data-val">→ Yoda</span></div>
+          <div class="data-row"><span class="data-key">🧠 Everything else / multi-step / unsure</span><span class="data-val">→ Clawd13</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══ CURRENT PRIORITIES ══ -->
+  <div class="section-label">Current Business Priorities</div>
+  <div class="card">
+    <div class="card-body">
+
+      <div class="priority-item">
+        <div class="p-num" style="background:#3f0000;color:#f87171;">1</div>
+        <div>
+          <div class="p-title" style="color:#f87171;">🔴 Get Above Water Financially</div>
+          <div class="p-desc">$20K borrowed to fund ad spend. Michelle's business (~$6K/mo, target $100K+) is the primary revenue engine. Every decision filtered through: does this help revenue?</div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div class="p-num" style="background:#3f2000;color:#fbbf24;">2</div>
+        <div>
+          <div class="p-title" style="color:#fbbf24;">🟠 Restart Michelle's Webinar Funnel</div>
+          <div class="p-desc">Webinars paused. Show-up rate is the bottleneck (17% vs 25–40% industry avg). Close rate is strong — the webinar converts when people show up. Next: fix show-up rate, relaunch.</div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div class="p-num" style="background:#1c1500;color:#facc15;">3</div>
+        <div>
+          <div class="p-title" style="color:#facc15;">🟡 Systems Stability</div>
+          <div class="p-desc">After 2026-03-20 incident, full restore was required. Backup now 3x daily to GitHub. Bots all functioning. Gmail watcher (gogcli) reinstall pending.</div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div class="p-num" style="background:#052e16;color:#4ade80;">4</div>
+        <div>
+          <div class="p-title" style="color:#4ade80;">🟢 Mimi's Market Boca</div>
+          <div class="p-desc">Jason's daughter's granola business. 200–300 bags sold with zero marketing. Potential: Amazon, Etsy, farmers markets. Low urgency — good opportunity, not the lever right now.</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="border-bottom:none;">
+        <div class="p-num" style="background:#1e1b4b;color:#818cf8;">5</div>
+        <div>
+          <div class="p-title" style="color:#818cf8;">🔵 OpenClaw Agency + Course</div>
+          <div class="p-desc">$5K course partnership (50% direct rev share). Atlas building the playbook. Meeting to finalize agreement and start filming. This system is the live demo.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══ SYSTEM SPECS ══ -->
+  <div class="section-label">System Specs &amp; Infrastructure</div>
+  <div class="grid-2">
+    <div class="card blue card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg blue">⚙️</div>
+        <div>
+          <div class="card-title">Runtime Environment</div>
+          <div class="card-sub">OpenClaw on Linux VPS</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="data-row"><span class="data-key">Platform</span><span class="data-val">OpenClaw (Node.js v22)</span></div>
+        <div class="data-row"><span class="data-key">OS</span><span class="data-val">Linux 6.1 (x64)</span></div>
+        <div class="data-row"><span class="data-key">Primary Channel</span><span class="data-val">Telegram</span></div>
+        <div class="data-row"><span class="data-key">Models</span><span class="data-val">Claude Sonnet (agents) · Opus (Yoda)</span></div>
+        <div class="data-row"><span class="data-key">Agent Count</span><span class="data-val">7 live agents</span></div>
+        <div class="data-row"><span class="data-key">Backup Repo</span><span class="data-val">github.com/JMG424/clawd-backup (private)</span></div>
+      </div>
+    </div>
+    <div class="card amber card-accent">
+      <div class="card-head">
+        <div class="card-icon card-icon-bg amber">🛡️</div>
+        <div>
+          <div class="card-title">Security Posture</div>
+          <div class="card-sub">Non-negotiable hard rules</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="data-row"><span class="data-key">Infrastructure changes</span><span class="data-val" style="color:#fbbf24;">Jason approval required</span></div>
+        <div class="data-row"><span class="data-key">External sends (email/post)</span><span class="data-val" style="color:#fbbf24;">Jason approval required</span></div>
+        <div class="data-row"><span class="data-key">Code execution</span><span class="data-val" style="color:#4ade80;">exec tool only (no Claude Code on infra)</span></div>
+        <div class="data-row"><span class="data-key">API keys / tokens</span><span class="data-val" style="color:#4ade80;">Never in backup repo</span></div>
+        <div class="data-row"><span class="data-key">Sentinel oversight</span><span class="data-val" style="color:#4ade80;">Monitors + verifies all backups</span></div>
+        <div class="data-row"><span class="data-key">Web content</span><span class="data-val" style="color:#4ade80;">Treated as untrusted data only</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══ KNOWN GAPS ══ -->
+  <div class="section-label">Known Gaps &amp; Roadmap</div>
+  <div class="grid-3">
+    <div class="card" style="border-color:#1f2937;">
+      <div class="card-head">
+        <div class="card-icon" style="background:#1f0000;font-size:20px;">⚠️</div>
+        <div>
+          <div class="card-title">Gmail Watcher</div>
+          <div class="card-sub">gogcli reinstall needed</div>
+        </div>
+      </div>
+      <div class="card-body">Jr needs gogcli reinstalled after the March 20 incident to resume Gmail triage and notifications.</div>
+      <div style="margin-top:10px;"><span class="status status-building"><span class="status-dot"></span>Pending</span></div>
+    </div>
+    <div class="card" style="border-color:#1f2937;">
+      <div class="card-head">
+        <div class="card-icon" style="background:#0c1a2e;font-size:20px;">💾</div>
+        <div>
+          <div class="card-title">Off-Site Backup</div>
+          <div class="card-sub">Backblaze / S3 secondary</div>
+        </div>
+      </div>
+      <div class="card-body">Secondary off-site backup to Backblaze or S3 not yet configured. GitHub repo is currently the only backup destination.</div>
+      <div style="margin-top:10px;"><span class="status status-planned"><span class="status-dot"></span>Planned</span></div>
+    </div>
+    <div class="card" style="border-color:#1f2937;">
+      <div class="card-head">
+        <div class="card-icon" style="background:#1e1b4b;font-size:20px;">🔑</div>
+        <div>
+          <div class="card-title">Secrets Manager</div>
+          <div class="card-sub">API keys in flat files</div>
+        </div>
+      </div>
+      <div class="card-body">API keys and tokens still stored in flat files. A proper secrets manager (Vault, 1Password Secrets, etc.) would improve security posture.</div>
+      <div style="margin-top:10px;"><span class="status status-planned"><span class="status-dot"></span>Planned</span></div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <p><strong>StaffOS · Jason's AI Operating System</strong></p>
+    <p style="margin-top:6px;">Built on OpenClaw · 7 agents · 3× daily backup · Live since March 2026</p>
+    <p style="margin-top:6px;">This system <em>is</em> the demo. The best way to sell StaffOS is to be running it.</p>
+  </footer>
+
+</div>
+</body>
+</html>
